@@ -16,7 +16,7 @@ class Solution:
                 dict[sortedword].append(word)
                 
         for items in dict.values():
-            result.append(i)
+            result.append(items)
         return result
             
             
