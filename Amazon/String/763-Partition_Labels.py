@@ -8,11 +8,11 @@ class Solution:
         start = 0
         end = 0
         last_indices = [None] * 26
-        
-        for i in range(len(S)):
+        l=len(S) # it will be fast if once I calculate it and use multiple times. 
+        for i in range(l) :
             last_indices[ord(S[i]) - ord('a')] = i
             
-        for i in range(len(S)):
+        for i in range(l) :
             end = max(end, last_indices[ord(S[i]) - ord('a')])
             if end == i:
                 output_arr.append(end - start + 1)
