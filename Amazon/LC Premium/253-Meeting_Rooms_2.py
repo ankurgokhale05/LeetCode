@@ -56,6 +56,29 @@ class Solution:
                 rooms_available += 1
                 e += 1
         return conference_required
+       
+'''
+Using Min Heap
+Time: O(NlogN)
+Space: O(N)
+'''
+import heapq
+class Solution:
+    def minMeetingRooms(self,intervals: List[List[int]]) -> int:
+        if intervals == None:
+            return 0
+        if len(intervals) == 1:
+            return 1
+        intervals.sort(key = lambda x: x[0])
+        heap = []
+        heapq.heappush(heap,intervals[0][1])
+        for i in range(1, len(intervals)):
+            start = intervals[i][0]
+            end = intervals[i][1]
+            if start >= heap[0]:
+                heapq.heappop(heap)
+            heapq.heappush(heap, intervals[i][1])
+        return len(heap)
                 
                     
         
