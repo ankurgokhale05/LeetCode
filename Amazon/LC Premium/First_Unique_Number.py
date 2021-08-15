@@ -54,6 +54,13 @@ firstUnique.add(809);          // the queue is now [809,809]
 firstUnique.showFirstUnique(); // return -1
 '''
 
+'''
+Time Complexity:
+O(K) for Constructor
+O(N) for showFirstUnique
+O(1) for Add
+
+'''
 class FirstUnique:
     def __init__(self, nums: List[int]):
         self.nums = nums
@@ -65,7 +72,7 @@ class FirstUnique:
                 self.dict_map[self.nums[i]] += 1
 
     def showFirstUnique(self) -> int:
-        for key, value in self.dict_map.items():
+        for key in self.dict_map.keys():
             if self.dict_map[key] == 1:
                 return key
         return -1
@@ -76,3 +83,55 @@ class FirstUnique:
             self.dict_map[value] = 1
         else:
             self.dict_map[value] += 1
+
+'''
+Time Complexity: 
+1) For Constructor: O(K); for each K numbers passed into the constructor we're making a call to add(). Each call to add() has a cost of O(1)
+2) For Add(): O(1) We are adding in O(1) and removing if number is unique by using ordered dict  or LinkedHashSet it is O(1)
+3) For showFirstUnique(): O(1) 
+
+Space Complexity: O(N) 
+Each number is stored once in the LinkedHashset. Therefore overall space of O(N)
+
+
+'''
+from collections import OrderedDict
+
+class FirstUnique:
+
+    def __init__(self, nums: List[int]):
+        self._queue = OrderedDict()
+        self._is_unique = {}
+        for num in nums:
+            # Notice that we're calling the "add" method of FirstUnique; not of the queue. 
+            self.add(num)
+        
+    def showFirstUnique(self) -> int:
+        # Check if there is still a value left in the queue. There might be no uniques.
+        if self._queue:
+            # We don't want to actually *remove* the value.
+            # Seeing as OrderedDict has no "get first" method, the way that we can get
+            # the first value is to create an iterator, and then get the "next" value
+            # from that. Note that this is O(1).
+            return next(iter(self._queue))
+        return -1
+        
+    def add(self, value: int) -> None:
+        # Case 1: We need to add the number to the queue and mark it as unique. 
+        if value not in self._is_unique:
+            self._is_unique[value] = True
+            self._queue[value] = None
+        # Case 2: We need to mark the value as no longer unique and then 
+        # remove it from the queue.
+        elif self._is_unique[value]:
+            self._is_unique[value] = False
+            self._queue.pop(value)
+        # Case 3: We don't need to do anything; the number was removed from the queue
+        # the second time it occurred.
+        
+
+
+# Your FirstUnique object will be instantiated and called as such:
+# obj = FirstUnique(nums)
+# param_1 = obj.showFirstUnique()
+# obj.add(value)

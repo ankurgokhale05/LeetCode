@@ -12,7 +12,34 @@ Example 2:
 Input: [[7,10],[2,4]]
 Output: 1
 
+Approach 1 
+Using Min Heap
+Time: O(NlogN)
+Space: O(N)
+'''
+import heapq
+class Solution:
+    def minMeetingRooms(self,intervals: List[List[int]]) -> int:
+        if intervals == None:
+            return 0
+        if len(intervals) == 1:
+            return 1
+        intervals.sort(key = lambda x: x[0])
+        heap = []
+        heapq.heappush(heap,intervals[0][1])
+        for i in range(1, len(intervals)):
+            start = intervals[i][0]
+            end = intervals[i][1]
+            if start >= heap[0]:
+                heapq.heappop(heap)
+            heapq.heappush(heap, intervals[i][1])
+        return len(heap)
 
+
+'''
+Approach 2 Chronological Ordering
+Time Complexity: O(NlogN)
+Space Complexity: O(N)
 # Very similar with what we do in real life. Whenever you want to start a meeting, 
  # you go and check if any empty room available (available > 0) and
  # if so take one of them ( available -=1 ). Otherwise,
@@ -28,6 +55,7 @@ We consider two pointers: s_ptr and e_ptr which refer to start pointer and end p
 When considering a specific meeting pointed to by s_ptr, we check if this start timing is greater than the meeting pointed to by e_ptr. If this is the case then that would mean some meeting has ended by the time the meeting at s_ptr had to start. So we can reuse one of the rooms. Otherwise, we have to allocate a new room.
 If a meeting has indeed ended i.e. if start[s_ptr] >= end[e_ptr], then we increment e_ptr.
 Repeat this process until s_ptr processes all of the meetings.
+
 '''
 
 
@@ -57,28 +85,7 @@ class Solution:
                 e += 1
         return conference_required
        
-'''
-Using Min Heap
-Time: O(NlogN)
-Space: O(N)
-'''
-import heapq
-class Solution:
-    def minMeetingRooms(self,intervals: List[List[int]]) -> int:
-        if intervals == None:
-            return 0
-        if len(intervals) == 1:
-            return 1
-        intervals.sort(key = lambda x: x[0])
-        heap = []
-        heapq.heappush(heap,intervals[0][1])
-        for i in range(1, len(intervals)):
-            start = intervals[i][0]
-            end = intervals[i][1]
-            if start >= heap[0]:
-                heapq.heappop(heap)
-            heapq.heappush(heap, intervals[i][1])
-        return len(heap)
+
                 
                     
         

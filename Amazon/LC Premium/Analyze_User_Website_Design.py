@@ -30,48 +30,31 @@ The 3-sequence ("home", "maps", "home") was visited at least once by 1 user.
 The 3-sequence ("cart", "maps", "home") was visited at least once by 1 user.
 
 
+
+
+
+
+
+I know most python guys know them well and good at reading compacted 1-line python code. I would like to break it down a little bit. I actually spent 1 hour to try those python packages. "Counter" looks more like dict.. and "combination" is to return an array of different combinations. Hope the code below might help people who would like to read. (Interesting enough I didn't know we can put "dict" into sorted(), and only return keys as an array).
 '''
-
-
-
-
-class Solution:     
+from collections import defaultdict
+from itertools import combinations
+class Solution:
     def mostVisitedPattern(self, username: List[str], timestamp: List[int], website: List[str]) -> List[str]:
-        '''
-        1) The idea is to use min heap to sort the websites visited by each user in ascending order.
-        2) then use a dict with users as keys and visited website as values
-        3) traverse through each of these lists of websites and create a sequence of 3 for all possible combinations
-        4) find the count for each of the sequence
-        '''
-        queue = []
-        heapq.heapify(queue)
-        #1) sort data based on timestamp - O(logn) where n = number of users
-        for uname,tstamp,wsite in zip(username,timestamp,website):
-            heapq.heappush(queue, (tstamp,wsite,uname))
         
-        user_dict = defaultdict(list)
-        #2) categorize websites based on users - O(n)
-        while queue:
-            _,web,user = heapq.heappop(queue)
-            user_dict[user].append(web)
+        packed_tuple = zip(timestamp, username, website)   # ---> [(3, 'joe', 'career'),....]
+        sorted_packed_tuple = sorted(packed_tuple)  # sort by timestamp (By default tuple always sorted by first item )
         
-        seq_count_dict = defaultdict(int)
-        max_count = 0
-        result = tuple()
+        mapping = defaultdict(list)
+        for t, u, w in sorted_packed_tuple:     # joe: [home, about, career]  websites in list are in ascending timestamp order
+            mapping[u].append(w)
         
-        #3) traverse thriugh all websites to fins sequence of 3 - O(n*k)
-        for websites in user_dict.values():
-            seq_combinations = combinations(websites,3) #O(k^3) where k is max number of websites visted by a user
-            
-            for seq in set(seq_combinations): # since we want the count of a sequence visited by most number of users, if a user visits the same sequence multiple times, it is counted as 1
-                seq_count_dict[seq] += 1
-                
-                if seq_count_dict[seq] > max_count:
-                    max_count = seq_count_dict[seq]
-                    result = seq
-                elif seq_count_dict[seq] == max_count: #If the count is same and you find a sequence with a smaller lexographical order
-                    if seq < result:
-                        result = seq
-        return list(result)
-        #Time Complexity: O(n*k^3)
+        counter_dict = defaultdict(int)         # use a dict for counting
+        for website_list in mapping.values():
+            combs = set(combinations(website_list, 3))    # size of combination is set to 3 
+            for comb in combs:
+                counter_dict[comb] += 1       # Tuple as key, counter as value,  e.g. ('home', 'about', 'career') : 2
+        
+        sorted_counter_dict = sorted(counter_dict, key=lambda x: (-counter_dict[x], x)) # sort descending by value, then lexicographically
+        return sorted_counter_dict[0]
         
